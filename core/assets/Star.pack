@@ -1,0 +1,32 @@
+Star.png
+  size:416, 32
+  format: RGBA8888
+  filter: Linear, Linear
+  repeat: none
+  pma: false
+s0_0
+  bounds: 0, 0, 32, 32
+s1_0
+  bounds: 32, 0, 32, 32
+s2_0
+  bounds: 64, 0, 32, 32
+s3_0
+  bounds: 96, 0, 32, 32
+s4_0
+  bounds: 128, 0, 32, 32
+s5_0
+  bounds: 160, 0, 32, 32
+s6_0
+  bounds: 192, 0, 32, 32
+s7_0
+  bounds: 224, 0, 32, 32
+s8_0
+  bounds: 256, 0, 32, 32
+s9_0
+  bounds: 288, 0, 32, 32
+s10_0
+  bounds: 320, 0, 32, 32
+s11_0
+  bounds: 352, 0, 32, 32
+s12_0
+  bounds: 384, 0, 32, 32
