@@ -117,6 +117,9 @@ public class Model implements Screen {
     // Conversation Variables
     private Scene[] awakeScenes;
     private Texture convoBack;
+    private Texture body;
+    private Texture eyes;
+    private Texture mouth;
     private int playerLies = 0;
     private int playerTruths = 0;
     private Portrait portrait;
@@ -124,6 +127,7 @@ public class Model implements Screen {
     private int sitCred = 100;
     private int otherCred = 100;
     private Comment.EFFECT currentEmotion = Comment.EFFECT.NONE;
+    private Comment.EFFECT pastEmotion = Comment.EFFECT.NONE;
     private int currentEmotionLevel = 0; // ranges from 0 to 100
     private GlyphLayout dialogue; // for plot stuff
     private GlyphLayout speaker;
@@ -158,6 +162,7 @@ public class Model implements Screen {
         monsterAtlas = new TextureAtlas("skeleton.pack");
         starAtlas = new TextureAtlas("Star.pack");
         convoBack = new Texture("dorm.jpg");
+        body = new Texture("fm02/fm02-body.png");
 
         // starting game
         fullReset();
@@ -187,6 +192,8 @@ public class Model implements Screen {
         dialogue.setText(font, "");
         speaker.setText(font, "");
         options = true;
+        eyes = new Texture("fm02/fm02-eyes-smile.png");
+        mouth = new Texture("fm02/fm02-mouth-smile00.png");
     }
 
     public void fullReset() {
@@ -197,6 +204,8 @@ public class Model implements Screen {
         introScenes = intro.getScenes();
         DialogueParser awake = new DialogueParser("Awake.xml");
         awakeScenes = awake.getScenes();
+        DialogueParser quip = new DialogueParser("Quips.xml");
+        quips = quip.getScenes();
         playerLies = 0;
         playerTruths = 0;
         restart();
@@ -346,7 +355,11 @@ public class Model implements Screen {
             batch.end();
             // person
             if (currentScene > 0) {
-
+                batch.begin();
+                batch.draw(body, camera.viewportWidth/8, 0, camera.viewportWidth *3 /4, camera.viewportHeight);
+                batch.draw(eyes, camera.viewportWidth/8, 0, camera.viewportWidth * 3/4, camera.viewportHeight);
+                batch.draw(mouth, camera.viewportWidth/8, 0, camera.viewportWidth *3/4, camera.viewportHeight);
+                batch.end();
             }
             // generic text box
             shape.begin(ShapeRenderer.ShapeType.Filled);
@@ -381,32 +394,109 @@ public class Model implements Screen {
             shape.end();
             batch.begin();
             GlyphLayout option = new GlyphLayout();
-            option.setText(font, "1. " + playerWords.get(0).getFlavor(), Color.WHITE, (float) MAX_WIDTH, Align.left, true);
+            String flavor = "None";
+            if (playerWords.size() >= 4) {
+                flavor = playerWords.get(3).getFlavor();
+            }
+            option.setText(font, "4. " + flavor, Color.WHITE, (float) MAX_WIDTH, Align.left, true);
             font.draw(batch, option, camera.viewportWidth/7 + 20, 50 * 3 + option.height);
-            option.setText(font, "2. " + playerWords.get(1).getFlavor(), Color.WHITE, (float) MAX_WIDTH, Align.left, true);
+            if (playerWords.size() >= 3) {
+                flavor = playerWords.get(2).getFlavor();
+            }
+            option.setText(font, "3. " + flavor, Color.WHITE, (float) MAX_WIDTH, Align.left, true);
             font.draw(batch, option, camera.viewportWidth/7 + 20, 50 * 4+ option.height + camera.viewportHeight/7);
-            option.setText(font, "3. " + playerWords.get(2).getFlavor(), Color.WHITE, (float) MAX_WIDTH, Align.left, true);
+            if (playerWords.size() >= 2) {
+                flavor = playerWords.get(1).getFlavor();
+            }
+            option.setText(font, "2. " + flavor, Color.WHITE, (float) MAX_WIDTH, Align.left, true);
             font.draw(batch, option, camera.viewportWidth/7 + 20, 50 * 5 + option.height + camera.viewportHeight/7 * 2);
-            option.setText(font, "4. " + playerWords.get(3).getFlavor(), Color.WHITE, (float) MAX_WIDTH, Align.left, true);
+            if (playerWords.size() >= 1) {
+                flavor = playerWords.get(0).getFlavor();
+            }
+            option.setText(font, "1. " + flavor, Color.WHITE, (float) MAX_WIDTH, Align.left, true);
             font.draw(batch, option, camera.viewportWidth/7 + 20, 50 * 6 + option.height + camera.viewportHeight/7 * 3);
             batch.end();
             // press number keys to activate
             if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
-
+                if (playerWords.size() >= 1) {
+                    evaluate(playerWords.get(0));
+                } else {
+                    evaluate(null);
+                }
             } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
-
+                if (playerWords.size() >= 2) {
+                    evaluate(playerWords.get(1));
+                } else {
+                    evaluate(null);
+                }
             } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
-
+                if (playerWords.size() >= 3) {
+                    evaluate(playerWords.get(2));
+                } else {
+                    evaluate(null);
+                }
             } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_4)) {
-
+                if (playerWords.size() >= 4) {
+                    evaluate(playerWords.get(3));
+                } else {
+                    evaluate(null);
+                }
             }
         } else {
+            int response;
+
+            if (pastEmotion != currentEmotion){
+                response = (int) (Math.random() * 2);
+                switch (currentEmotion) {
+                    case NONE:
+                        eyes = new Texture("fm02/fm02-eyes-smile.png");
+                        mouth = new Texture("fm02/fm02-mouth-smile00.png");
+                        speaker.setText(font, quips[quips.length - 1].getSpeaker());
+                        dialogue.setText(font, quips[quips.length - 1].getDialogue());
+                        break;
+                    case ANGER:
+                        eyes = new Texture("fm02/fm02-eyes-upset.png");
+                        mouth = new Texture("fm02/fm02-mouth-upset00.png");
+                        speaker.setText(font, quips[3].getSpeaker());
+                        dialogue.setText(font, quips[3].getDialogue());
+                        break;
+                    case TRUST:
+                        eyes = new Texture("fm02/fm02-eyes-joy.png");
+                        mouth = new Texture("fm02/fm02-mouth-smile01.png");
+                        speaker.setText(font, quips[5].getSpeaker());
+                        dialogue.setText(font, quips[5].getDialogue());
+                        break;
+                    case HURT:
+                        eyes = new Texture("fm02/fm02-eyes-bawl.png");
+                        mouth = new Texture("fm02/fm02-mouth-cry01.png");
+                        speaker.setText(font, quips[0].getSpeaker());
+                        dialogue.setText(font, quips[0].getDialogue());
+                        break;
+                    default:
+                        speaker.setText(font, quips[quips.length - 1].getSpeaker());
+                        dialogue.setText(font, quips[quips.length - 1].getDialogue());
+                        break;
+                }
+            }
+            // get response
+            batch.begin();
+            batch.draw(body, camera.viewportWidth/8, 0, camera.viewportWidth *3 /4, camera.viewportHeight);
+            batch.draw(eyes, camera.viewportWidth/8, 0, camera.viewportWidth * 3/4, camera.viewportHeight);
+            batch.draw(mouth, camera.viewportWidth/8, 0, camera.viewportWidth *3/4, camera.viewportHeight);
+            batch.end();
             // generic text box
             shape.begin(ShapeRenderer.ShapeType.Filled);
             shape.setColor(Color.TEAL);
             shape.rect(camera.viewportWidth/7, 50, 5* camera.viewportWidth/7, camera.viewportHeight/5);
             shape.end();
-            // get response
+            batch.begin();
+            font.setColor(Color.WHITE);
+            font.draw(batch, speaker, (camera.viewportWidth - speaker.width)/2, camera.viewportHeight/5 + 25);
+            font.draw(batch, dialogue, (camera.viewportWidth - dialogue.width)/2, camera.viewportHeight/5 - speaker.height);
+            batch.end();
+            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+                options = true;
+            }
         }
         // display
     }
@@ -553,6 +643,18 @@ public class Model implements Screen {
         playerWords.add(truths[randomTruth].copy());
         wordCollected.setText(font, truths[randomTruth].getFlavor().replace(". ", ".\n"));
         playerTruths++;
+    }
+
+    public void evaluate(Comment comment) {
+        if (comment != null) {
+            playerWords.remove(comment);
+            playerWords.add(comment);
+            // who is it targetting
+            Comment.TARGET target = comment.getTarget();
+            pastEmotion = currentEmotion;
+            currentEmotion = comment.getEffect();
+        }
+        options = false;
     }
 
     @Override
