@@ -1,0 +1,54 @@
+skeleton.png
+  size:1200, 450
+  format: RGBA8888
+  filter: Linear, Linear
+  repeat: none
+  pma: false
+s0_0
+  bounds: 0, 0, 150, 150
+s1_0
+  bounds: 150, 0, 150, 150
+s2_0
+  bounds: 300, 0, 150, 150
+s3_0
+  bounds: 450, 0, 150, 150
+s4_0
+  bounds: 600, 0, 150, 150
+s5_0
+  bounds: 750, 0, 150, 150
+s6_0
+  bounds: 900, 0, 150, 150
+s7_0
+  bounds: 1050, 0, 150, 150
+s0_1
+  bounds: 0, 150, 150, 150
+s1_1
+  bounds: 150, 150, 150, 150
+s2_1
+  bounds: 300, 150, 150, 150
+s3_1
+  bounds: 450, 150, 150, 150
+s4_1
+  bounds: 600, 150, 150, 150
+s5_1
+  bounds: 750, 150, 150, 150
+s6_1
+  bounds: 900, 150, 150, 150
+s7_1
+  bounds: 1050, 150, 150, 150
+s0_2
+  bounds: 0, 300, 150, 150
+s1_2
+  bounds: 150, 300, 150, 150
+s2_2
+  bounds: 300, 300, 150, 150
+s3_2
+  bounds: 450, 300, 150, 150
+s4_2
+  bounds: 600, 300, 150, 150
+s5_2
+  bounds: 750, 300, 150, 150
+s6_2
+  bounds: 900, 300, 150, 150
+s7_2
+  bounds: 1050, 300, 150, 150
