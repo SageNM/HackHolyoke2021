@@ -64,6 +64,14 @@ public class Model implements Screen{
     // Conversation Variables
     private TextureRegion convoBack;
     private Portrait portrait;
+    private int yourCred = 100;
+    private int sitCred = 100;
+    private int otherCred = 100;
+    private Comment.EFFECT currentEmotion = Comment.EFFECT.NONE;
+    private int currentEmotionLevel = 0; // ranges from 0 to 100
+    private GlyphLayout dialogue; // for plot stuff
+    private GlyphLayout speaker;
+
 
 
     public Model() {
@@ -83,13 +91,14 @@ public class Model implements Screen{
         startText = new GlyphLayout();
         startText.setText(font, "MONSTARS\nPress SPACE to Start!");
         wordCollected = new GlyphLayout();
-        wordCollected.setText(font, "");
+        dialogue = new GlyphLayout();
+        speaker = new GlyphLayout();
         playerAtlas = new TextureAtlas("Warrior.pack");
         monsterAtlas = new TextureAtlas("skeleton.pack");
         starAtlas = new TextureAtlas("Star.pack");
 
         // starting game
-        restart();
+        fullReset();
     }
 
     private void restart() {
@@ -103,13 +112,22 @@ public class Model implements Screen{
         player.setRightBound(WORLD_WIDTH * 15);
         player.setState("idle");
         // resetting minigame
+        wordCollected.setText(font, "");
         monsters = new ArrayList<>();
         stars = new ArrayList<>();
-        playerWords = new ArrayList<>();
+        // resetting conversation
+        yourCred = 100;
+        sitCred = 100;
+        otherCred = 100;
+        currentEmotion = Comment.EFFECT.NONE;
+        currentEmotionLevel = 0; // ranges from 0 to 100
+        dialogue.setText(font, "");
+        speaker.setText(font, "");
     }
 
     public void fullReset() {
         lives = 5;
+        playerWords = new ArrayList<>();
         restart();
     }
 
@@ -198,12 +216,22 @@ public class Model implements Screen{
 
     public void renderConvo(float deltaTime) {
         // ask if user wants to retry game
+        batch.begin();
         if (lives > 0) {
-
+            ScreenUtils.clear(Color.BLACK);
+            sprite = player.getSprite();
+            sprite.draw(batch);
+            // Run again
+            if (Gdx.input.isKeyPressed(Input.Keys.Y)) {
+                currentState = GAME_STATE.MINI;
+                restart();
+            } else if (Gdx.input.isKeyPressed(Input.Keys.N)) {
+                // print out old lines
+            }
         } else {
 
         }
-
+        batch.end();
     }
 
     public void renderEnd(float deltaTime) {
