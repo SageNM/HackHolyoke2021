@@ -28,7 +28,7 @@ public class Model implements Screen{
     public static final int WORLD_HEIGHT = 793;
     public static final int GROUND = 50;
     public static final double GRAVITY = -0.25;
-    public static final double STAR_GRAVITY = -0.2;
+    public static final double STAR_GRAVITY = -0.15;
     public static final int MAX_MONSTERS = 50;
 
     // views
@@ -43,6 +43,11 @@ public class Model implements Screen{
     private TextureAtlas starAtlas;
     private Sprite sprite;
 
+    // Overall game variables
+    private final Comment[] truths;
+    private final Comment[] lies;
+    private ArrayList<Comment> playerWords;
+
     // Start screen variables
     private GlyphLayout startText;
 
@@ -53,6 +58,12 @@ public class Model implements Screen{
     private double playerSpeed = 2;
     private ArrayList<Monster> monsters;
     private ArrayList<Character> stars;
+    private int lives = 5;
+    private GlyphLayout wordCollected;
+
+    // Conversation Variables
+    private TextureRegion convoBack;
+    private Portrait portrait;
 
 
     public Model() {
@@ -63,9 +74,16 @@ public class Model implements Screen{
         camera = new OrthographicCamera();
         viewport = new StretchViewport(WORLD_WIDTH, WORLD_HEIGHT, camera); //what the user sees
 
+        // parsing XML files
+        CommentParser truthsLies = new CommentParser("TruthsLies.xml");
+        truths = truthsLies.getTruths();
+        lies = truthsLies.getLies();
+
         // setting up fixed values
         startText = new GlyphLayout();
         startText.setText(font, "MONSTARS\nPress SPACE to Start!");
+        wordCollected = new GlyphLayout();
+        wordCollected.setText(font, "");
         playerAtlas = new TextureAtlas("Warrior.pack");
         monsterAtlas = new TextureAtlas("skeleton.pack");
         starAtlas = new TextureAtlas("Star.pack");
@@ -87,8 +105,13 @@ public class Model implements Screen{
         // resetting minigame
         monsters = new ArrayList<>();
         stars = new ArrayList<>();
+        playerWords = new ArrayList<>();
     }
 
+    public void fullReset() {
+        lives = 5;
+        restart();
+    }
 
     @Override
     public void render(float deltaTime) {
@@ -142,6 +165,7 @@ public class Model implements Screen{
         if (tick > 60 * 60) {
             tick = 0;
             currentState = GAME_STATE.CONVERSATION;
+            lives--;
         }
         // centering camera on character
         camera.position.set(player.getLocation().x, camera.viewportHeight / 2f, 0);
@@ -164,12 +188,21 @@ public class Model implements Screen{
         genMonsters();
         genStars();
         checkCollisions(deltaTime);
-        // draw character and foreground
+        // draw character
         sprite.draw(batch);
+        // show what lie/truth was collected
+        font.setColor(Color.WHITE);
+        font.draw(batch, wordCollected, player.getLocation().x - (wordCollected.width)/2, (WORLD_HEIGHT + wordCollected.height)/2);
         batch.end();
     }
 
     public void renderConvo(float deltaTime) {
+        // ask if user wants to retry game
+        if (lives > 0) {
+
+        } else {
+
+        }
 
     }
 
@@ -222,9 +255,9 @@ public class Model implements Screen{
 
     public void genStars() {
         // randomly spawns stars up to a point
-        if (tick % (int)(10 * spawnRate) == 0) {
+        if (tick % (int)(5 * spawnRate) == 0) {
             int xPos = (int)(Math.random()*700) - 350;
-            int velocity = (int)(Math.random()*8) - 4;
+            int velocity = (int)(Math.random()*4) - 2;
             Character star = new Character(starAtlas, new Coord(xPos + player.getLocation().x, WORLD_HEIGHT), new Coord(velocity, 0), new Coord(0, STAR_GRAVITY));
             stars.add(star);
         }
@@ -242,6 +275,7 @@ public class Model implements Screen{
                 monster.setVel(new Coord(-1 * monster.getVelocity().x, 5));
                 if (!monster.isAlive()) {
                     monster.setState("death");
+                    getLie();
                 }
             } else if (player.isHit(monster, 10) && !player.isDamaged() && monster.isAlive()) {
                 int monsterDamage = (int) (Math.random() * 2) + 1;
@@ -250,6 +284,7 @@ public class Model implements Screen{
                 player.setVel(new Coord(0, player.getVelocity().y));
                 if (!player.isAlive()) {
                     currentState = GAME_STATE.CONVERSATION;
+                    lives--;
                     tick = 0;
                 }
             }
@@ -279,6 +314,7 @@ public class Model implements Screen{
             // if player jumps to catch star
             if (star.isHit(player) && player.getLocation().y > GROUND) {
                 remove.add(star);
+                getTruth();
             } else if (player.isHit(star, 10) && !player.isDamaged()) {
                 int starDamage = (int) (Math.random() * 2) + 1;
                 player.takeHit(starDamage);
@@ -286,6 +322,7 @@ public class Model implements Screen{
                 player.setVel(new Coord(0, player.getVelocity().y));
                 if (!player.isAlive()) {
                     currentState = GAME_STATE.CONVERSATION;
+                    lives--;
                     tick = 0;
                 }
                 remove.add(star);
@@ -295,6 +332,20 @@ public class Model implements Screen{
             starSprite.draw(batch);
         }
         stars.removeAll(remove);
+    }
+
+    public void getLie() {
+        int numLies = lies.length;
+        int randomLie = (int)(Math.random() * numLies);
+        playerWords.add(lies[randomLie].copy());
+        wordCollected.setText(font, lies[randomLie].getFlavor().replace(". ", ".\n"));
+    }
+
+    public void getTruth() {
+        int numTruths = truths.length;
+        int randomTruth = (int)(Math.random() * numTruths);
+        playerWords.add(truths[randomTruth].copy());
+        wordCollected.setText(font, truths[randomTruth].getFlavor().replace(". ", ".\n"));
     }
 
     @Override

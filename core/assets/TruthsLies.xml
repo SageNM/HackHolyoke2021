@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<node>
+    <lie>
+        <id>20</id>
+        <target>SELF</target>
+        <flavor>You never wanted to be here.</flavor>
+        <strength>STRONG_NEG</strength>
+        <effect>HURT</effect>
+    </lie>
+
+    <lie>
+        <id>21</id>
+        <target>OTHER</target>
+        <flavor>They are an amazing artist!</flavor>
+        <strength>WEAK_POS</strength>
+        <effect>TRUST</effect>
+    </lie>
+
+    <lie>
+        <id>22</id>
+        <target>OTHER</target>
+        <flavor>They are very neat.</flavor>
+        <strength>WEAK_POS</strength>
+        <effect>TRUST</effect>
+    </lie>
+
+    <lie>
+        <id>23</id>
+        <target>SELF</target>
+        <flavor>You will not get angry.</flavor>
+        <strength>WEAK_POS</strength>
+        <effect>NONE</effect>
+    </lie>
+
+    <lie>
+        <id>24</id>
+        <target>OTHER</target>
+        <flavor>Your outfit looks great!</flavor>
+        <strength>WEAK_POS</strength>
+        <effect>TRUST</effect>
+    </lie>
+
+    <lie>
+        <id>25</id>
+        <target>OTHER</target>
+        <flavor>You said you would meet up with your friend but forgot. Instead, you made plans with someone else. Your friend just saw you both at the clothing store across from the coffee shop you had planned to meet your friend at.</flavor>
+        <strength>STRONG_NEG</strength>
+        <effect>HURT</effect>
+    </lie>
+
+    <truth>
+        <id>20</id>
+        <target>SITUATION</target>
+        <flavor>The kitchen sink is definitely full of dirty dishes. Oops.</flavor>
+        <strength>AVERAGE_NEG</strength>
+        <effect>NONE</effect>
+    </truth>
+
+    <truth>
+        <id>21</id>
+        <target>SELF</target>
+        <flavor>There is a pile of clothes on the floor of the living room, which is your favorite space to work.</flavor>
+        <strength>STRONG_NEG</strength>
+        <effect>ANGER</effect>
+    </truth>
+
+    <truth>
+        <id>22</id>
+        <target>OTHER</target>
+        <flavor>Your outfit looks bad.</flavor>
+        <strength>AVERAGE_NEG</strength>
+        <effect>HURT</effect>
+    </truth>
+
+
+
+
+
+
+
+
+    <truth>
+        <id>23</id>
+        <target>OTHER</target>
+        <flavor>You promised to call your parents at 8:00 PM but got caught up with work. As soon as you finished your work, you quickly called your parents and explained the situation.</flavor>
+        <strength>AVERAGE_POS</strength>
+        <effect>TRUST</effect>
+    </truth>
+
+    <truth>
+        <id>24</id>
+        <target>SELF</target>
+        <flavor>You feel like you are alone.</flavor>
+        <strength>STRONG_NEG</strength>
+        <effect>HURT</effect>
+    </truth>
+
+    <truth>
+        <id>25</id>
+        <target>SELF</target>
+        <flavor>You feel happy!</flavor>
+        <strength>STRONG_POS</strength>
+        <effect>NONE</effect>
+    </truth>
+</node>
