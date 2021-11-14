@@ -1,0 +1,204 @@
+SpriteSheet\Warrior_Sheet-Effect.png
+  size:414, 748
+  format: RGBA8888
+  filter: Linear, Linear
+  repeat: none
+  pma: false
+idle
+  bounds: 0, 0, 69, 44
+idle
+  bounds: 69, 0, 69, 44
+idle
+  bounds: 138, 0, 69, 44
+idle
+  bounds: 207, 0, 69, 44
+idle
+  bounds: 276, 0, 69, 44
+idle
+  bounds: 345, 0, 69, 44
+run
+  bounds: 0, 44, 69, 44
+run
+  bounds: 69, 44, 69, 44
+run
+  bounds: 138, 44, 69, 44
+run
+  bounds: 207, 44, 69, 44
+run
+  bounds: 276, 44, 69, 44
+run
+  bounds: 345, 44, 69, 44
+run
+  bounds: 0, 88, 69, 44
+run
+  bounds: 69, 88, 69, 44
+attack
+  bounds: 138, 88, 69, 44
+attack
+  bounds: 207, 88, 69, 44
+attack
+  bounds: 276, 88, 69, 44
+attack
+  bounds: 345, 88, 69, 44
+attack
+  bounds: 0, 132, 69, 44
+attack
+  bounds: 69, 132, 69, 44
+attack
+  bounds: 138, 132, 69, 44
+attack
+  bounds: 207, 132, 69, 44
+attack
+  bounds: 276, 132, 69, 44
+attack
+  bounds: 345, 132, 69, 44
+attack
+  bounds: 0, 176, 69, 44
+attack
+  bounds: 69, 176, 69, 44
+death
+  bounds: 138, 176, 69, 44
+death
+  bounds: 207, 176, 69, 44
+death
+  bounds: 276, 176, 69, 44
+death
+  bounds: 345, 176, 69, 44
+death
+  bounds: 0, 220, 69, 44
+death
+  bounds: 69, 220, 69, 44
+death
+  bounds: 138, 220, 69, 44
+death
+  bounds: 207, 220, 69, 44
+death
+  bounds: 276, 220, 69, 44
+death
+  bounds: 345, 220, 69, 44
+death
+  bounds: 0, 264, 69, 44
+hurt
+  bounds: 69, 264, 69, 44
+hurt
+  bounds: 138, 264, 69, 44
+hurt
+  bounds: 207, 264, 69, 44
+hurt
+  bounds: 276, 264, 69, 44
+jump
+  bounds: 345, 264, 69, 44
+jump
+  bounds: 0, 308, 69, 44
+jump
+  bounds: 69, 308, 69, 44
+up_to_fall
+  bounds: 138, 308, 69, 44
+up_to_fall
+  bounds: 207, 308, 69, 44
+fall
+  bounds: 276, 308, 69, 44
+fall
+  bounds: 345, 308, 69, 44
+fall
+  bounds: 0, 352, 69, 44
+dash
+  bounds: 69, 352, 69, 44
+dash
+  bounds: 138, 352, 69, 44
+dash
+  bounds: 207, 352, 69, 44
+dash
+  bounds: 276, 352, 69, 44
+dash
+  bounds: 345, 352, 69, 44
+dash
+  bounds: 0, 396, 69, 44
+dash
+  bounds: 69, 396, 69, 44
+dash_attack
+  bounds: 138, 396, 69, 44
+dash_attack
+  bounds: 207, 396, 69, 44
+dash_attack
+  bounds: 276, 396, 69, 44
+dash_attack
+  bounds: 345, 396, 69, 44
+dash_attack
+  bounds: 0, 440, 69, 44
+dash_attack
+  bounds: 69, 440, 69, 44
+dash_attack
+  bounds: 138, 440, 69, 44
+dash_attack
+  bounds: 207, 440, 69, 44
+dash_attack
+  bounds: 276, 440, 69, 44
+dash_attack
+  bounds: 345, 440, 69, 44
+edge_grab
+  bounds: 0, 484, 69, 44
+edge_grab
+  bounds: 69, 484, 69, 44
+edge_grab
+  bounds: 138, 484, 69, 44
+edge_grab
+  bounds: 207, 484, 69, 44
+edge_grab
+  bounds: 276, 484, 69, 44
+edge_idle
+  bounds: 345, 484, 69, 44
+edge_idle
+  bounds: 0, 528, 69, 44
+edge_idle
+  bounds: 69, 528, 69, 44
+edge_idle
+  bounds: 138, 528, 69, 44
+edge_idle
+  bounds: 207, 528, 69, 44
+edge_idle
+  bounds: 276, 528, 69, 44
+crouch
+  bounds: 345, 528, 69, 44
+crouch
+  bounds: 0, 572, 69, 44
+crouch
+  bounds: 69, 572, 69, 44
+crouch
+  bounds: 138, 572, 69, 44
+crouch
+  bounds: 207, 572, 69, 44
+crouch
+  bounds: 276, 572, 69, 44
+wall_slide
+  bounds: 345, 572, 69, 44
+wall_slide
+  bounds: 0, 616, 69, 44
+wall_slide
+  bounds: 69, 616, 69, 44
+ladder_grab
+  bounds: 138, 616, 69, 44
+ladder_grab
+  bounds: 207, 616, 69, 44
+ladder_grab
+  bounds: 276, 616, 69, 44
+ladder_grab
+  bounds: 345, 616, 69, 44
+ladder_grab
+  bounds: 0, 660, 69, 44
+ladder_grab
+  bounds: 69, 660, 69, 44
+ladder_grab
+  bounds: 138, 660, 69, 44
+ladder_grab
+  bounds: 207, 660, 69, 44
+slide
+  bounds: 276, 660, 69, 44
+slide
+  bounds: 345, 660, 69, 44
+slide
+  bounds: 0, 704, 69, 44
+slide
+  bounds: 69, 704, 69, 44
+slide
+  bounds: 138, 704, 69, 44
