@@ -11,7 +11,7 @@ import java.lang.Math;
 public class Character {
     public static final int MAX_DAMAGE_FRAMES = 30;
     public static final int MAX_ACCELERATION = 1;
-    public static final int MAX_VELOCITY = 10;
+    public static final int MAX_VELOCITY = 15;
     public static final int GROUND = 50;
     public static final int DEFAULT_HEALTH = 5;
     public static final int DEFAULT_LEFT = -928;

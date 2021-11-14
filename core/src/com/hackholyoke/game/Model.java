@@ -28,6 +28,7 @@ public class Model implements Screen{
     public static final int WORLD_HEIGHT = 793;
     public static final int GROUND = 50;
     public static final double GRAVITY = -0.25;
+    public static final double STAR_GRAVITY = -0.2;
     public static final int MAX_MONSTERS = 50;
 
     // views
@@ -67,6 +68,7 @@ public class Model implements Screen{
         startText.setText(font, "MONSTARS\nPress SPACE to Start!");
         playerAtlas = new TextureAtlas("Warrior.pack");
         monsterAtlas = new TextureAtlas("skeleton.pack");
+        starAtlas = new TextureAtlas("Star.pack");
 
         // starting game
         restart();
@@ -75,7 +77,7 @@ public class Model implements Screen{
     private void restart() {
         tick = 0;
         spawnRate = 5;
-        Coord start = new Coord(WORLD_WIDTH/2f,12);
+        Coord start = new Coord(WORLD_WIDTH * 15/2f,12);
         Coord vel = new Coord(0, 0);
         Coord accel = new Coord(0, GRAVITY);
         player = new Player(playerAtlas, start, vel, accel);
@@ -188,7 +190,7 @@ public class Model implements Screen{
         } else if (Gdx.input.isKeyPressed(Input.Keys.UP) && !player.getState().equals("jump")) {
             player.setState("jump");
             if (player.getLocation().y <= GROUND) {
-                player.setVel(new Coord(player.getVelocity().x * 0.8, 5));
+                player.setVel(new Coord(player.getVelocity().x * 0.8, 10));
             }
         }
         // if all keys lifted
@@ -201,7 +203,7 @@ public class Model implements Screen{
 
     public void genMonsters() {
         // randomly spawns monsters up to a point
-        if (tick % (int)(60 * spawnRate) == 0 && monsters.size() < MAX_MONSTERS) {
+        if (tick % (int)(30 * spawnRate) == 0 && monsters.size() < MAX_MONSTERS) {
             if (spawnRate > 0.5) {
                 spawnRate -= 0.05;
             }
@@ -209,9 +211,9 @@ public class Model implements Screen{
             boolean spawnRight = (int)(Math.random() *2) == 0;
             Monster newMonster;
             if (spawnRight) {
-                newMonster = new Monster(monsterAtlas, new Coord(player.getLocation().x + 600, 0), new Coord(-velocity, 0), new Coord(0, GRAVITY));
+                newMonster = new Monster(monsterAtlas, new Coord(player.getLocation().x + 500, 0), new Coord(-velocity, 0), new Coord(0, GRAVITY));
             } else {
-                newMonster = new Monster(monsterAtlas, new Coord(player.getLocation().x - 600, 0), new Coord(velocity, 0), new Coord(0, GRAVITY));
+                newMonster = new Monster(monsterAtlas, new Coord(player.getLocation().x - 500, 0), new Coord(velocity, 0), new Coord(0, GRAVITY));
             }
             newMonster.setState("run");
             monsters.add(newMonster);
@@ -219,10 +221,17 @@ public class Model implements Screen{
     }
 
     public void genStars() {
-
+        // randomly spawns stars up to a point
+        if (tick % (int)(10 * spawnRate) == 0) {
+            int xPos = (int)(Math.random()*700) - 350;
+            int velocity = (int)(Math.random()*8) - 4;
+            Character star = new Character(starAtlas, new Coord(xPos + player.getLocation().x, WORLD_HEIGHT), new Coord(velocity, 0), new Coord(0, STAR_GRAVITY));
+            stars.add(star);
+        }
     }
 
     public void checkCollisions(float delta) {
+        // checking player/monster collisions
         for (Monster monster : monsters) {
             monster.tick(delta);
             Sprite monsterSprite = monster.getSprite();
@@ -262,6 +271,30 @@ public class Model implements Screen{
             }
             sprite.setColor(Color.WHITE);
         }
+        //checking player/star collisions
+        ArrayList<Character> remove = new ArrayList<>();
+        for (Character star: stars) {
+            star.tick(delta);
+            Sprite starSprite = star.getSprite();
+            // if player jumps to catch star
+            if (star.isHit(player) && player.getLocation().y > GROUND) {
+                remove.add(star);
+            } else if (player.isHit(star, 10) && !player.isDamaged()) {
+                int starDamage = (int) (Math.random() * 2) + 1;
+                player.takeHit(starDamage);
+                player.setState("hurt");
+                player.setVel(new Coord(0, player.getVelocity().y));
+                if (!player.isAlive()) {
+                    currentState = GAME_STATE.CONVERSATION;
+                    tick = 0;
+                }
+                remove.add(star);
+            } else if (star.getLocation().y <= GROUND + 5) {
+                remove.add(star);
+            }
+            starSprite.draw(batch);
+        }
+        stars.removeAll(remove);
     }
 
     @Override
