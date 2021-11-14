@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<root>
+    <scene>
+        <id>11</id>
+        <speaker> You </speaker>
+        <text>
+            Oh...I just had the strangest dream where I fought monsters and collected stars to get “Truths” and “Lies”. I think the novel I read last night made my dream wander into the world of Giaviathra. </text>
+    </scene>
+    <scene>
+        <id>12</id>
+        <speaker> Narrator </speaker>
+        <text> You see your roommate and go to say “Good Morning”, but... </text>
+    </scene>
+
+    <scene>
+        <id>13</id>
+        <speaker> You </speaker>
+        <text> Hmm? Why can I not speak? Nothing comes out of my mouth even though I want to say it out loud. What is happening?  </text>
+    </scene>
+
+    <scene>
+    <id>14</id>
+    <speaker> Game Narrator </speaker>
+    <text> Greetings Player. You do not have the ability to select your own speech. You must choose your speech options from the “Truths Table” or the “Lies Table” you have collected last night in Giaviathra.
+        Rules for using speech:
+        You cannot use your own speech until you have unlocked the special speech ability.
+        You must use speech options you have collected from the night in Giaviathran.
+        You can only use each option once.
+        You can use as many of the options you have collected at a time.
+        You can collect the speech options for future use.
+        You may begin</text>
+    </scene>
+
+</root>

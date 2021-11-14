@@ -2,6 +2,7 @@ package com.hackholyoke.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
@@ -10,15 +11,62 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
 
-public class Model implements Screen{
+public class Model implements Screen {
+
+    public class MyInputProcessor extends InputAdapter {
+
+        @Override
+        public boolean keyDown(int keycode) {
+            if (currentState == GAME_STATE.INTRO) {
+                if (keycode == Input.Keys.SPACE) {
+                     if (currentScenes[currentScene].advance()) {
+                         if (currentScene < currentScenes.length - 1) {
+                             currentScene++;
+                             speaker.setText(font, currentScenes[currentScene].getSpeaker());
+                             String dialogueText = currentScenes[currentScene].getDialogue().replace(". ", ".\n");
+                             dialogue.setText(font, dialogueText);
+                         } else {
+                             currentState = GAME_STATE.MINI;
+                             currentScene = 0;
+                         }
+                     } else {
+                         speaker.setText(font, currentScenes[currentScene].getSpeaker());
+                         String dialogueText = currentScenes[currentScene].getDialogue().replace(". ", ".\n");
+                         dialogue.setText(font, dialogueText);
+                     }
+                }
+            } else if (currentState == GAME_STATE.CONVERSATION) {
+                if (keycode == Input.Keys.SPACE) {
+                    if (awakeScenes[currentScene].advance()) {
+                        if (currentScene < awakeScenes.length - 1) {
+                            currentScene++;
+                            speaker.setText(font, awakeScenes[currentScene].getSpeaker());
+                            String dialogueText = awakeScenes[currentScene].getDialogue().replace(". ", ".\n");
+                            dialogue.setText(font, dialogueText, Color.WHITE, (float)MAX_WIDTH, Align.left, true);
+                        } else {
+                            currentState = GAME_STATE.BATTLE;
+                            currentScene = 0;
+                        }
+                    } else {
+                        speaker.setText(font, awakeScenes[currentScene].getSpeaker());
+                        String dialogueText = awakeScenes[currentScene].getDialogue().replace(". ", ".\n");
+                        dialogue.setText(font, dialogueText, Color.WHITE, (float)MAX_WIDTH, Align.left, true);
+                    }
+                }
+            }
+            return super.keyDown(keycode);
+        }
+    }
+
     // tracking game state
-    public enum GAME_STATE {START, MINI, CONVERSATION, END}
+    public enum GAME_STATE {START, INTRO, MINI, CONVERSATION, BATTLE, END}
     private GAME_STATE currentState = GAME_STATE.START;
     private int tick;
     private float elapsedTime = 0;
@@ -30,6 +78,7 @@ public class Model implements Screen{
     public static final double GRAVITY = -0.25;
     public static final double STAR_GRAVITY = -0.15;
     public static final int MAX_MONSTERS = 50;
+    public static final int MAX_WIDTH = 928 * 5/7 - 50;
 
     // views
     private Camera camera;
@@ -42,14 +91,18 @@ public class Model implements Screen{
     private TextureAtlas monsterAtlas;
     private TextureAtlas starAtlas;
     private Sprite sprite;
+    private ShapeRenderer shape;
 
     // Overall game variables
     private final Comment[] truths;
     private final Comment[] lies;
     private ArrayList<Comment> playerWords;
+    private int currentScene = 0;
+    private Scene[] currentScenes;
 
     // Start screen variables
     private GlyphLayout startText;
+    private Scene[] introScenes;
 
     // Mini game variables
     private Background miniBack;
@@ -62,7 +115,10 @@ public class Model implements Screen{
     private GlyphLayout wordCollected;
 
     // Conversation Variables
-    private TextureRegion convoBack;
+    private Scene[] awakeScenes;
+    private Texture convoBack;
+    private int playerLies = 0;
+    private int playerTruths = 0;
     private Portrait portrait;
     private int yourCred = 100;
     private int sitCred = 100;
@@ -72,15 +128,20 @@ public class Model implements Screen{
     private GlyphLayout dialogue; // for plot stuff
     private GlyphLayout speaker;
 
-
+    // Battle Variables
+    private Scene[] quips;
+    private boolean options = true;
 
     public Model() {
+
         // Setting up variables
         miniBack = new Background();
         font = new BitmapFont();
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new StretchViewport(WORLD_WIDTH, WORLD_HEIGHT, camera); //what the user sees
+        shape = new ShapeRenderer();
+        Gdx.input.setInputProcessor(new MyInputProcessor());
 
         // parsing XML files
         CommentParser truthsLies = new CommentParser("TruthsLies.xml");
@@ -96,6 +157,7 @@ public class Model implements Screen{
         playerAtlas = new TextureAtlas("Warrior.pack");
         monsterAtlas = new TextureAtlas("skeleton.pack");
         starAtlas = new TextureAtlas("Star.pack");
+        convoBack = new Texture("dorm.jpg");
 
         // starting game
         fullReset();
@@ -104,6 +166,7 @@ public class Model implements Screen{
     private void restart() {
         tick = 0;
         spawnRate = 5;
+        currentScene = 0;
         Coord start = new Coord(WORLD_WIDTH * 15/2f,12);
         Coord vel = new Coord(0, 0);
         Coord accel = new Coord(0, GRAVITY);
@@ -123,11 +186,19 @@ public class Model implements Screen{
         currentEmotionLevel = 0; // ranges from 0 to 100
         dialogue.setText(font, "");
         speaker.setText(font, "");
+        options = true;
     }
 
     public void fullReset() {
         lives = 5;
         playerWords = new ArrayList<>();
+        // resetting all dialogue
+        DialogueParser intro = new DialogueParser("Intro.xml");
+        introScenes = intro.getScenes();
+        DialogueParser awake = new DialogueParser("Awake.xml");
+        awakeScenes = awake.getScenes();
+        playerLies = 0;
+        playerTruths = 0;
         restart();
     }
 
@@ -137,11 +208,17 @@ public class Model implements Screen{
             case START:
                 renderStart();
                 break;
+            case INTRO:
+                renderIntro();
+                break;
             case MINI:
                 renderMini();
                 break;
             case CONVERSATION:
                 renderConvo(deltaTime);
+                break;
+            case BATTLE:
+                renderBattle();
                 break;
             case END:
                 renderEnd(deltaTime);
@@ -171,9 +248,32 @@ public class Model implements Screen{
         batch.end();
         //starting game after 1 second
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && tick > 60) {
-            currentState = GAME_STATE.MINI;
+            currentState = GAME_STATE.INTRO;
             tick = 0;
         }
+    }
+
+    public void renderIntro() {
+        currentScenes = introScenes;
+        // place background
+        if (currentScene == 0) {
+            batch.begin();
+            batch.draw(convoBack, (camera.viewportWidth - convoBack.getWidth())/2, (camera.viewportHeight - convoBack.getHeight())/2);
+            batch.end();
+        } else {
+            ScreenUtils.clear(Color.BLACK);
+        }
+        // generic text box
+        shape.begin(ShapeRenderer.ShapeType.Filled);
+        shape.setColor(Color.TEAL);
+        shape.rect(camera.viewportWidth/7, 50, 5* camera.viewportWidth/7, camera.viewportHeight/5);
+        shape.end();
+        batch.begin();
+        //actual text
+        font.setColor(Color.WHITE);
+        font.draw(batch, speaker, (camera.viewportWidth - speaker.width)/2, camera.viewportHeight/5 + 25);
+        font.draw(batch, dialogue, (camera.viewportWidth - dialogue.width)/2, camera.viewportHeight/5 - speaker.height);
+        batch.end();
     }
 
     public void renderMini() {
@@ -222,16 +322,93 @@ public class Model implements Screen{
             sprite = player.getSprite();
             sprite.draw(batch);
             // Run again
+            dialogue.setText(font, "You have collected " + playerTruths + " truths and " + playerLies + " lies\n" +
+                    "You have "+ lives+ " more lives remaining. Do you wish to continue?\nPress Y for YES or N for NO", Color.WHITE, (float)MAX_WIDTH, Align.left, true);
+            font.draw(batch, dialogue, player.getLocation().x-(dialogue.width)/2, camera.viewportHeight/2f);
             if (Gdx.input.isKeyPressed(Input.Keys.Y)) {
                 currentState = GAME_STATE.MINI;
                 restart();
             } else if (Gdx.input.isKeyPressed(Input.Keys.N)) {
+                lives = 0;
+                currentScene = 0;
+                currentScenes = awakeScenes;
+                speaker.setText(font, "");
+                dialogue.setText(font, "");
                 // print out old lines
             }
         } else {
+            // centering camera on character
+            camera.position.set(WORLD_WIDTH/2f, camera.viewportHeight / 2f, 0);
+            camera.update();
+            batch.setProjectionMatrix(camera.combined);
+            // background
+            batch.draw(convoBack, (camera.viewportWidth - convoBack.getWidth())/2, (camera.viewportHeight - convoBack.getHeight())/2);
+            batch.end();
+            // person
+            if (currentScene > 0) {
+
+            }
+            // generic text box
+            shape.begin(ShapeRenderer.ShapeType.Filled);
+            shape.setColor(Color.TEAL);
+            shape.rect(camera.viewportWidth/7, 50, 5* camera.viewportWidth/7, camera.viewportHeight/5);
+            shape.end();
+            batch.begin();
+            // dialogue
+            //actual text
+            font.setColor(Color.WHITE);
+            font.draw(batch, speaker, (camera.viewportWidth - speaker.width)/2, camera.viewportHeight/5 + 25);
+            font.draw(batch, dialogue, (camera.viewportWidth - dialogue.width)/2, camera.viewportHeight/5 - speaker.height);
 
         }
         batch.end();
+    }
+
+    public void renderBattle() {
+        // making background
+        batch.begin();
+        batch.draw(convoBack, (camera.viewportWidth - convoBack.getWidth())/2, (camera.viewportHeight - convoBack.getHeight())/2);
+        batch.end();
+        // person
+        if (options) {
+            // display 4 options
+            shape.begin(ShapeRenderer.ShapeType.Filled);
+            shape.setColor(Color.TEAL);
+            shape.rect(camera.viewportWidth/7, 50 + 50, 5* camera.viewportWidth/7, camera.viewportHeight/7);
+            shape.rect(camera.viewportWidth/7, 50 + 50*2 + camera.viewportHeight/7, 5* camera.viewportWidth/7, camera.viewportHeight/7);
+            shape.rect(camera.viewportWidth/7, 50 + 50*3 + camera.viewportHeight/7 * 2, 5* camera.viewportWidth/7, camera.viewportHeight/7);
+            shape.rect(camera.viewportWidth/7, 50 + 50 * 4 + camera.viewportHeight/7 * 3, 5* camera.viewportWidth/7, camera.viewportHeight/7);
+            shape.end();
+            batch.begin();
+            GlyphLayout option = new GlyphLayout();
+            option.setText(font, "1. " + playerWords.get(0).getFlavor(), Color.WHITE, (float) MAX_WIDTH, Align.left, true);
+            font.draw(batch, option, camera.viewportWidth/7 + 20, 50 * 3 + option.height);
+            option.setText(font, "2. " + playerWords.get(1).getFlavor(), Color.WHITE, (float) MAX_WIDTH, Align.left, true);
+            font.draw(batch, option, camera.viewportWidth/7 + 20, 50 * 4+ option.height + camera.viewportHeight/7);
+            option.setText(font, "3. " + playerWords.get(2).getFlavor(), Color.WHITE, (float) MAX_WIDTH, Align.left, true);
+            font.draw(batch, option, camera.viewportWidth/7 + 20, 50 * 5 + option.height + camera.viewportHeight/7 * 2);
+            option.setText(font, "4. " + playerWords.get(3).getFlavor(), Color.WHITE, (float) MAX_WIDTH, Align.left, true);
+            font.draw(batch, option, camera.viewportWidth/7 + 20, 50 * 6 + option.height + camera.viewportHeight/7 * 3);
+            batch.end();
+            // press number keys to activate
+            if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
+
+            } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
+
+            } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
+
+            } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_4)) {
+
+            }
+        } else {
+            // generic text box
+            shape.begin(ShapeRenderer.ShapeType.Filled);
+            shape.setColor(Color.TEAL);
+            shape.rect(camera.viewportWidth/7, 50, 5* camera.viewportWidth/7, camera.viewportHeight/5);
+            shape.end();
+            // get response
+        }
+        // display
     }
 
     public void renderEnd(float deltaTime) {
@@ -367,6 +544,7 @@ public class Model implements Screen{
         int randomLie = (int)(Math.random() * numLies);
         playerWords.add(lies[randomLie].copy());
         wordCollected.setText(font, lies[randomLie].getFlavor().replace(". ", ".\n"));
+        playerLies++;
     }
 
     public void getTruth() {
@@ -374,6 +552,7 @@ public class Model implements Screen{
         int randomTruth = (int)(Math.random() * numTruths);
         playerWords.add(truths[randomTruth].copy());
         wordCollected.setText(font, truths[randomTruth].getFlavor().replace(". ", ".\n"));
+        playerTruths++;
     }
 
     @Override
@@ -404,5 +583,6 @@ public class Model implements Screen{
     public void dispose() {
         font.dispose();
         batch.dispose();
+        shape.dispose();
     }
 }

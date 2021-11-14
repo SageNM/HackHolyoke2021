@@ -33,7 +33,7 @@ public class DialogueParser {
                     // Getting speaker
                     String speaker = sceneElement.getElementsByTagName("speaker").item(0).getTextContent();
                     // Getting text
-                    String text = sceneElement.getElementsByTagName("speaker").item(0).getTextContent();
+                    String text = sceneElement.getElementsByTagName("text").item(0).getTextContent();
                     scenes[i] = new Scene(id, speaker, text);
                 }
             }

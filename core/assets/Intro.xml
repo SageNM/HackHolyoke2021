@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<root>
+    <scene>
+        <id>0</id>
+        <speaker>Narrator</speaker>
+        <text>
+            You have just finished reading a fantasy novel full of monsters and knights. It is late into the night and the moon has risen high. You have finally decided to turn off your night light and let your roommate sleep...
+            ...and the night grows longer as you fall deeper into your sleep. Soon you are transported into a world of fantasy with monsters and knights in shining armour. </text>
+    </scene>
+
+    <scene>
+        <id>1</id>
+        <speaker>You</speaker>
+        <text> Where am I? What is this place? </text>
+    </scene>
+
+    <scene>
+        <id>2</id>
+        <speaker>Game Narrator</speaker>
+        <text> Welcome Player. You have entered the world of Giaviathra.
+            You have 5 lives to complete the game. It begins in…
+            10
+            9
+            8
+            7
+            6
+            5
+            4
+            3
+            2
+            1
+            0 </text>
+    </scene>
+
+</root>
